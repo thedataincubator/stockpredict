@@ -21,15 +21,12 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
   # https://conda.io/docs/user-guide/tasks/use-conda-with-travis-ci.html
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - conda install --file conda-requirements.txt --yes
-  - source activate test-environment
   - pip install -r requirements.txt
 
 script:
-  - source activate test-environment
-  - nosetests tests/test.py
   - pylint app.py
+  - nosetests tests/test.py
 
 deploy:
   provider: heroku
