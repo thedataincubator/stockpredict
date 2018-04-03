@@ -1,0 +1,1 @@
+from stockticker import create_app
