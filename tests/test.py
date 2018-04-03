@@ -8,7 +8,7 @@ class TestApp(unittest.TestCase):
     def setUp(self):
         self.url = 'http://a_url'
         self.secret_key = 'a'
-        app = create_app(self.url, self.secret_key)
+        app = create_app(self.url, self.secret_key, 7)
         app.testing = True
         self.app = app.test_client()
 
