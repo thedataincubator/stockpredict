@@ -29,6 +29,7 @@ install:
 script:
   - source activate test-environment
   - nosetests tests/test.py
+  - pylint app.py
 
 deploy:
   provider: heroku
