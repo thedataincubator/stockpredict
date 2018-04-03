@@ -28,7 +28,7 @@ install:
 script:
   - source activate test-environment
   - nosetests tests/test.py
-
+  - pylint stockticker
 deploy:
   provider: heroku
   app: rocky-beyond-26963
