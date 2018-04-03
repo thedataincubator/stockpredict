@@ -6,7 +6,7 @@ import pandas as pd
 from bokeh.plotting import figure
 from bokeh.embed import components
 
-def create_app(prophet_url, secret_key):
+def create_app(prophet_url, secret_key, bokeh_version):
     app = Flask(__name__)
 
     @app.route('/')
@@ -35,6 +35,6 @@ def create_app(prophet_url, secret_key):
                 line_color='red')
         fig.line(df['ds'].values, df['y'].values)
         script, div = components(fig)
-        return render_template('index.html', script=script, div=div)
+        return render_template('index.html', script=script, div=div, bokeh=str(bokeh_version))
     
     return app
