@@ -24,10 +24,10 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - conda install --file conda-requirements.txt --yes
   - source activate test-environment
-  - python setup.py install
   - pip install -r requirements.txt
 
 script:
+  - source activate test-environment
   - nosetests tests/test.py
 
 deploy:
