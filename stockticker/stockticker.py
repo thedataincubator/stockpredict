@@ -24,7 +24,7 @@ def query_quandl(ticker, quandl_key, value='open', days=100):
                          params=params, timeout=10)
     except Timeout:
         raise QuandlException('Request timed out')
-    if r.status_code != 200:
+    if not r.ok:
         raise QuandlException('Request failed with status code {}'.format(r.status_code))
     # we can catch more exceptions below, like JSONDecodeError, KeyError, etc.
     raw = json.loads(r.text)
@@ -40,8 +40,8 @@ def create_app(prophet_url, secret_key, quandl_key, bokeh_version):
     @app.route('/')
     def index(): # pylint: disable=W0612
         """main route"""
-        # Add user input?
-        df = query_quandl('GOOGL', quandl_key, 'open', 100) # pylint: disable=C0103
+        # TODO: Replace with Quandl API call on user input - may need to edit test
+        df = pd.read_csv('static/GOOGL_data.txt') # pylint: disable=C0103
 
         # clean up reading into parameters
         params = dict(ds=[str(i) for i in df['ds'].values],
