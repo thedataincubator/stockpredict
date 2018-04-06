@@ -17,7 +17,7 @@ def query_quandl(ticker, quandl_key, value='open', days=500):
     """get stock value from quandl"""
 
     # prepare date string for the Quandl API
-    date = (datetime.today() - timedelta(day=i)).strftime('%Y-%m-%d')
+    date = (datetime.today() - timedelta(days=days)).strftime('%Y-%m-%d')
     params = {'ticker': ticker, 'date.gte': date,
               'qopts.columns': 'date,{}'.format(value), 'api_key': quandl_key}
     try:
