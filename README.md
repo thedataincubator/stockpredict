@@ -5,10 +5,10 @@ This repository contains a stock price predict app that is based on stock market
 
 Repository Organization:
 static: contains Google stock price file GOOGL_data.txt
-stockpredict: contains python codes that reads in the data and makes prediction and makes plot, also the html template. 
-tests: test.py tests deploys the app.
-.travis.yml: 
-app.py deploys the app to the web.
+stockpredict: contains stockticker.py that reads in the stock price data and requests the prediction (done using Facebook prophet). templates folder contains the html template. 
+tests: test.py tests the app.
+.travis.yml: specifies the programming language and testing environment. When new commits are made or pull request is submitted, Travis CI will run the tests specified in this file automatically. 
+app.py: entry point to the application, set up the environment variables, and call the codes that create the app.   
  
 Tasks:
 1. Clone repo locally, ask Zach to get permissions to push branches
