@@ -8,7 +8,8 @@ class TestApp(unittest.TestCase):
     def setUp(self):
         self.url = 'http://a_url'
         self.secret_key = 'a'
-        app = create_app(self.url, self.secret_key, 7)
+        self.quandl_key = 'b'
+        app = create_app(self.url, self.secret_key, self.quandl_key, 7)
         app.testing = True
         self.app = app.test_client()
 
@@ -28,3 +29,11 @@ class TestApp(unittest.TestCase):
                       status=200)
         res = self.app.get('/')
         self.assertEqual(res.status_code, 200)
+
+    def test_quandl_success(self):
+        # TODO
+        pass
+
+    def test_quandl_fail(self):
+        # TODO
+        pass

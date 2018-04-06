@@ -1,5 +1,7 @@
 """stockticker app"""
+from datetime import datetime, timedelta
 import requests
+from requests import Timeout
 import simplejson as json
 from flask import Flask, render_template
 from flask import  request # pylint: disable=W0611
@@ -7,14 +9,38 @@ import pandas as pd
 from bokeh.plotting import figure
 from bokeh.embed import components
 
-def create_app(prophet_url, secret_key, bokeh_version):
+class QuandlException(Exception):
+    """Exception for Quandl API"""
+    pass
+
+def query_quandl(ticker, quandl_key, value='open', days=500):
+    """get stock value from quandl"""
+
+    # prepare date string for the Quandl API
+    date = (datetime.today() - timedelta(days=days)).strftime('%Y-%m-%d')
+    params = {'ticker': ticker, 'date.gte': date,
+              'qopts.columns': 'date,{}'.format(value), 'api_key': quandl_key}
+    try:
+        r = requests.get('https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json', # pylint: disable=C0103
+                         params=params, timeout=10)
+    except Timeout:
+        raise QuandlException('Request timed out')
+    if not r.ok:
+        raise QuandlException('Request failed with status code {}'.format(r.status_code))
+    # we can catch more exceptions below, like JSONDecodeError, KeyError, etc.
+    raw = json.loads(r.text)
+    df = pd.DataFrame(raw['datatable']['data'], # pylint: disable=C0103
+                      columns=[col['name'] for col in raw['datatable']['columns']])
+    return df[['date', value]].rename({'date': 'ds', value: 'y'}, axis=1)
+
+def create_app(prophet_url, secret_key, quandl_key, bokeh_version): # pylint: disable=W0613
     """create a flask app"""
     app = Flask(__name__)
 
     @app.route('/')
     def index(): # pylint: disable=W0612
         """main route"""
-        # Replace with API call to quandle
+        # Replace with Quandl API call on user input - may need to edit test
         df = pd.read_csv('static/GOOGL_data.txt') # pylint: disable=C0103
 
         # clean up reading into parameters
