@@ -13,14 +13,13 @@ class QuandlException(Exception):
     """Exception for Quandl API"""
     pass
 
-def query_quandl(ticker, quandl_key, value='open', days=100):
+def query_quandl(ticker, quandl_key, value='open', days=500):
     """get stock value from quandl"""
-    days = min(days, 800) # getting much larger than this causes too long URI
 
     # prepare date string for the Quandl API
-    today = datetime.today()
-    dates = ','.join((today-timedelta(days=i)).strftime('%Y-%m-%d') for i in range(1, days+1))
-    params = {'ticker': ticker, 'date': dates, 'api_key': quandl_key}
+    date = (datetime.today() - timedelta(day=i)).strftime('%Y-%m-%d')
+    params = {'ticker': ticker, 'date.gte': date,
+              'qopts.columns': 'date,{}'.format(value), 'api_key': quandl_key}
     try:
         r = requests.get('https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json', # pylint: disable=C0103
                          params=params, timeout=10)
@@ -30,7 +29,6 @@ def query_quandl(ticker, quandl_key, value='open', days=100):
         raise QuandlException('Request failed with status code {}'.format(r.status_code))
     # we can catch more exceptions below, like JSONDecodeError, KeyError, etc.
     raw = json.loads(r.text)
-    # raw['datatable']['data'] = [['GOOGL', '2018-03-22', 1080.01, 1083.92, ...], ...]
     df = pd.DataFrame(raw['datatable']['data'], # pylint: disable=C0103
                       columns=[col['name'] for col in raw['datatable']['columns']])
     return df[['date', value]].rename({'date': 'ds', value: 'y'}, axis=1)
