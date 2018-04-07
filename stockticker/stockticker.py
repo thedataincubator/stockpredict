@@ -8,14 +8,39 @@ from flask import  request # pylint: disable=W0611
 import pandas as pd
 from bokeh.plotting import figure
 from bokeh.embed import components
+import io
+import zipfile
+#static
+static_valid_tickers=pd.DataFrame()
 
 class QuandlException(Exception):
     """Exception for Quandl API"""
     pass
 
+def update_valid_ticker(quandl_key):
+    '''Uptate the dataframe for valid ticker'''
+    params = {'api_key': quandl_key}
+    try:
+        r = requests.get('https://www.quandl.com/api/v3/databases/WIKI/codes',
+                         params=params, timeout=10)
+    except Timeout:
+        raise QuandlException('Request timed out')
+    if not r.ok:
+        raise QuandlException('Request failed with status code {}'.format(r.status_code))
+    file = zipfile.ZipFile(io.BytesIO(r.content))
+    static_valid_tickers = pd.read_csv(io.BytesIO(file.read('WIKI-datasets-codes.csv')),
+                            names=['name','info'])['name'].str.slice(start = 5)
+
+def check_valid_ticker(ticker):
+    '''Validate the ticker'''
+    if ticker in static_valid_tickers.values:
+        return True
+    else:
+        raise QuandlException('The inputed ticker is not valid')
+        return False
+
 def query_quandl(ticker, quandl_key, value='open', days=500):
     """get stock value from quandl"""
-
     # prepare date string for the Quandl API
     date = (datetime.today() - timedelta(days=days)).strftime('%Y-%m-%d')
     params = {'ticker': ticker, 'date.gte': date,
@@ -40,6 +65,8 @@ def create_app(prophet_url, secret_key, quandl_key, bokeh_version): # pylint: di
     @app.route('/')
     def index(): # pylint: disable=W0612
         """main route"""
+        if len(static_valid_tickers) < 1 :
+            update_valid_ticker(quandl_key)
         # Replace with Quandl API call on user input - may need to edit test
         df = pd.read_csv('static/GOOGL_data.txt') # pylint: disable=C0103
 
