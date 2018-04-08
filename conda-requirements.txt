@@ -9,5 +9,3 @@ simplejson
 nose
 responses
 mock
-io
-zipfile
