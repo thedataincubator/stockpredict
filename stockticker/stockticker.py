@@ -11,7 +11,7 @@ from bokeh.embed import components
 import io
 import zipfile
 #static
-static_valid_tickers=pd.DataFrame()
+static_valid_tickers = pd.DataFrame()
 
 class QuandlException(Exception):
     """Exception for Quandl API"""
@@ -27,9 +27,10 @@ def update_valid_ticker(quandl_key):
         raise QuandlException('Request timed out')
     if not r.ok:
         raise QuandlException('Request failed with status code {}'.format(r.status_code))
-    file = zipfile.ZipFile(io.BytesIO(r.content))
-    static_valid_tickers = pd.read_csv(io.BytesIO(file.read('WIKI-datasets-codes.csv')),
-                            names=['name','info'])['name'].str.slice(start = 5)
+    file = zipfile.ZipFile(io.BytesIO(r.content)).read('WIKI-datasets-codes.csv')
+    static_valid_tickers = pd.read_csv(io.BytesIO(file), names=['name', 'info'],
+    usecols=[0], squeeze=True).str.slice(start=5)
+    return static_valid_tickers
 
 def check_valid_ticker(ticker):
     '''Validate the ticker'''
@@ -66,7 +67,7 @@ def create_app(prophet_url, secret_key, quandl_key, bokeh_version): # pylint: di
     def index(): # pylint: disable=W0612
         """main route"""
         if len(static_valid_tickers) < 1 :
-            update_valid_ticker(quandl_key)
+            static_valid_tickers = update_valid_ticker(quandl_key)
         # Replace with Quandl API call on user input - may need to edit test
         df = pd.read_csv('static/GOOGL_data.txt') # pylint: disable=C0103
 
