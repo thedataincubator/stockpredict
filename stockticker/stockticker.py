@@ -16,7 +16,7 @@ class QuandlException(Exception):
     pass
 
 def update_valid_ticker(quandl_key):
-    '''Uptate the dataframe for valid ticker'''
+    '''Uptate the valid ticker'''
     params = {'api_key': quandl_key}
     try:
         r = requests.get('https://www.quandl.com/api/v3/databases/WIKI/codes',
@@ -26,16 +26,14 @@ def update_valid_ticker(quandl_key):
     if not r.ok:
         raise QuandlException('Request failed with status code {}'.format(r.status_code))
     csv_f = zipfile.ZipFile(BytesIO(r.content)).read('WIKI-datasets-codes.csv')
-    tickers = pd.read_csv(BytesIO(csv_f), names=['name', 'e'], usecols=[0], squeeze=True).str.slice(start=5)
+    tickers = pd.read_csv(BytesIO(csv_f), names=['name', 'e'], usecols=[0],
+    squeeze=True).str.slice(start=5)
     return list(tickers.values)
 
-def check_valid_ticker(ticker):
+def check_valid_ticker(ticker,valid_tickers):
     '''Validate the ticker'''
-    if ticker in static_valid_tickers:
-        return True
-    else:
+    if ticker not in valid_tickers:
         raise QuandlException('The inputed ticker is not valid')
-        return False
 
 def query_quandl(ticker, quandl_key, value='open', days=500):
     """get stock value from quandl"""
@@ -58,13 +56,12 @@ def query_quandl(ticker, quandl_key, value='open', days=500):
 
 def create_app(prophet_url, secret_key, quandl_key, bokeh_version): # pylint: disable=W0613
     """create a flask app"""
+    valid_tickers = update_valid_ticker(quandl_key)
     app = Flask(__name__)
 
     @app.route('/')
     def index(): # pylint: disable=W0612
         """main route"""
-        if len(static_valid_tickers) < 1:
-            static_valid_tickers = update_valid_ticker(quandl_key)
         # Replace with Quandl API call on user input - may need to edit test
         df = pd.read_csv('static/GOOGL_data.txt') # pylint: disable=C0103
 
