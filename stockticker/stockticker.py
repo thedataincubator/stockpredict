@@ -31,7 +31,7 @@ def query_quandl(ticker, quandl_key, value='open', days=500):
     raw = json.loads(r.text)
     df = pd.DataFrame(raw['datatable']['data'], # pylint: disable=C0103
                       columns=[col['name'] for col in raw['datatable']['columns']])
-    return df[['date', value]].rename({'date': 'ds', value: 'y'}, axis=1)
+    return df[['date', value]].rename({'date': 'ds', value: 'y'}, axis='columns')
 
 def create_app(prophet_url, secret_key, quandl_key, bokeh_version): # pylint: disable=W0613
     """create a flask app"""
