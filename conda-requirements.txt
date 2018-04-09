@@ -1,11 +1,11 @@
 nomkl
-pandas
-bokeh
+pandas=0.21
+bokeh==0.12.7
 dill
-flask
-jinja2
+flask==0.12.2
+jinja2==2.9.6
 pip
-simplejson
+simplejson==3.11.1
 nose
-responses
+responses==0.5.1
 mock
