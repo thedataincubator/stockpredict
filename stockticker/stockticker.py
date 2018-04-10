@@ -41,7 +41,7 @@ def create_app(prophet_url, secret_key, quandl_key, bokeh_version): # pylint: di
     def index(): # pylint: disable=W0612
         """main route"""
         # Replace with Quandl API call on user input - may need to edit test
-        df = pd.read_csv('static/GOOGL_data.txt') # pylint: disable=C0103
+        df = query_quandl('GOOGL', quandl_key) # pylint: disable=C0103
 
         # clean up reading into parameters
         params = dict(ds=[str(i) for i in df['ds'].values],
