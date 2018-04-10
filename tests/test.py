@@ -391,6 +391,7 @@ class TestApp(unittest.TestCase):
 
     @responses.activate
     def test_post_error(self):
+        responses.add(responses.GET, QUANDL_URL, json=QUANDL_DATA, status=200)
         responses.add(responses.POST, self.url,
                       json={'error': 'not found'}, 
                       status=404)
@@ -399,6 +400,7 @@ class TestApp(unittest.TestCase):
 
     @responses.activate
     def test_post_success(self):
+        responses.add(responses.GET, QUANDL_URL, json=QUANDL_DATA, status=200)
         responses.add(responses.POST, self.url,
                       json={'ds': [1,2,3,4],
                             'yhat': [2,3,4,5]},
