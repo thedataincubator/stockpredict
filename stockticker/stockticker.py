@@ -6,8 +6,7 @@ import simplejson as json
 from flask import Flask, render_template
 from flask import  request # pylint: disable=W0611
 import pandas as pd
-from bokeh.plotting import figure
-from bokeh.embed import components
+from stockplot import plotting
 
 class QuandlException(Exception):
     """Exception for Quandl API"""
@@ -58,12 +57,7 @@ def create_app(prophet_url, secret_key, quandl_key, bokeh_version): # pylint: di
         prediction['ds'] = pd.to_datetime(prediction['ds'])
         df['ds'] = pd.to_datetime(df['ds'])
         # also show errors
-        fig = figure(x_axis_type="datetime")
-        fig.line(prediction['ds'].values,
-                 prediction['yhat'].values,
-                 line_color='red')
-        fig.line(df['ds'].values, df['y'].values)
-        script, div = components(fig)
+        script,div = plotting(prediction,df)
         return render_template('index.html', script=script, div=div, bokeh=str(bokeh_version))
 
     return app
