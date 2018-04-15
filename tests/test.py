@@ -393,7 +393,7 @@ class TestApp(unittest.TestCase):
     def test_post_error(self):
         responses.add(responses.GET, QUANDL_URL, json=QUANDL_DATA, status=200)
         responses.add(responses.POST, self.url,
-                      json={'error': 'not found'}, 
+                      json={'error': 'not found'},
                       status=404)
         res = self.app.get('/')
         self.assertEqual(res.status_code, 404)
@@ -416,10 +416,9 @@ class TestApp(unittest.TestCase):
         self.assertEqual(len(QUANDL_DATA['datatable']['data']),
                          df.shape[0])
         for ind, col in zip([1, 2], ['ds', 'y']):
-            data = map(lambda x : x[ind], 
+            data = map(lambda x : x[ind],
                     QUANDL_DATA['datatable']['data'])
-
-            self.assertTrue((data == df[col].values).all())
+            self.assertTrue((list(data) == df[col].values).all())
 
     @responses.activate
     def _test_quandl_error(self, status):
@@ -430,4 +429,3 @@ class TestApp(unittest.TestCase):
     def test_quandl_fail(self):
         self._test_quandl_error(404)
         self._test_quandl_error(503)
-        

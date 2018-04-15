@@ -7,10 +7,16 @@ from flask import Flask, render_template
 from flask import  request # pylint: disable=W0611
 import pandas as pd
 from .stockplot import plotting
+from .static_ticker import VALIDT
 
 class QuandlException(Exception):
     """Exception for Quandl API"""
     pass
+
+def ticker_precheck(ticker):
+    """comvert ticker format and check its existence"""
+    ticker = ''.join(ticker.upper().split())
+    return ticker if ticker in VALIDT else 'GOOGL'
 
 def query_quandl(ticker, quandl_key, value='open', days=500):
     """get stock value from quandl"""
@@ -40,7 +46,9 @@ def create_app(prophet_url, secret_key, quandl_key, bokeh_version): # pylint: di
     def index(): # pylint: disable=W0612
         """main route"""
         # Replace with Quandl API call on user input - may need to edit test
-        df = query_quandl('GOOGL', quandl_key) # pylint: disable=C0103
+        ticker = 'GOOGL' # place holder
+        ticker = ticker_precheck(ticker)
+        df = query_quandl(ticker, quandl_key) # pylint: disable=C0103
 
         # clean up reading into parameters
         params = dict(ds=[str(i) for i in df['ds'].values],
