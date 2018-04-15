@@ -12,7 +12,7 @@ from .static_ticker import VALIDT
 class QuandlException(Exception):
     """Exception for Quandl API"""
     pass
-    
+
 def ticker_precheck(ticker):
     """comvert ticker format and check its existence"""
     ticker = ''.join(ticker.upper().split())
