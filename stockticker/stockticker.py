@@ -12,6 +12,11 @@ from .static_ticker import VALIDT
 class QuandlException(Exception):
     """Exception for Quandl API"""
     pass
+    
+def ticker_precheck(ticker):
+    """comvert ticker format and check its existence"""
+    ticker = ''.join(ticker.upper().split())
+    return ticker if ticker in VALIDT else 'GOOGL'
 
 def query_quandl(ticker, quandl_key, value='open', days=500):
     """get stock value from quandl"""
@@ -42,10 +47,8 @@ def create_app(prophet_url, secret_key, quandl_key, bokeh_version): # pylint: di
         """main route"""
         # Replace with Quandl API call on user input - may need to edit test
         ticker = 'GOOGL' # place holder
-        if ticker in VALIDT:
-            df = query_quandl(ticker, quandl_key) # pylint: disable=C0103
-        else: # place holder
-            df = query_quandl('GOOGL', quandl_key) # pylint: disable=C0103
+        ticker = ticker_precheck(ticker)
+        df = query_quandl(ticker, quandl_key) # pylint: disable=C0103
 
         # clean up reading into parameters
         params = dict(ds=[str(i) for i in df['ds'].values],
