@@ -3,11 +3,13 @@ from datetime import datetime, timedelta
 import requests
 from requests import Timeout
 import simplejson as json
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for, jsonify
 from flask import  request # pylint: disable=W0611
 import pandas as pd
 from .stockplot import plotting
 from .static_ticker import VALIDT
+from .html_builder import get_html
+
 
 class QuandlException(Exception):
     """Exception for Quandl API"""
@@ -42,15 +44,16 @@ def create_app(prophet_url, secret_key, quandl_key, bokeh_version): # pylint: di
     """create a flask app"""
     app = Flask(__name__)
 
-    @app.route('/')
-    def index(): # pylint: disable=W0612
-        """main route"""
-        # Replace with Quandl API call on user input - may need to edit test
-        ticker = 'GOOGL' # place holder
-        ticker = ticker_precheck(ticker)
-        df = query_quandl(ticker, quandl_key) # pylint: disable=C0103
 
-        # clean up reading into parameters
+    @app.route('/_handle_ticker')
+    def handle_ticker():
+        """Reads a ticker from the GET request, looks up the relevant data from Quandl,
+        adds Prophet predictions, passes the data through Bokeh and then returns
+        the Bokeh JavaScript and div via JSON"""
+
+        ticker = request.args.get('ticker', type=str)
+        df = query_quandl(ticker, quandl_key)
+                # clean up reading into parameters
         params = dict(ds=[str(i) for i in df['ds'].values],
                       y=[str(i) for i in df['y'].values],
                       key=secret_key)
@@ -66,6 +69,17 @@ def create_app(prophet_url, secret_key, quandl_key, bokeh_version): # pylint: di
         df['ds'] = pd.to_datetime(df['ds'])
         # also show errors
         script, div = plotting(prediction, df)
-        return render_template('index.html', script=script, div=div, bokeh=str(bokeh_version))
+        return jsonify(script=script,div=div)
 
+
+    @app.route('/')
+    def index(): # pylint: disable=W0612
+        """main route"""
+        tickerHandlerUrl = url_for('handle_ticker', _external = True)
+        tickers = ["GOOGL", "AAPL"]
+
+        jqueryScript, resultDivs = get_html(tickers, tickerHandlerUrl)
+
+        return render_template('index.html', resultDivs=resultDivs, jqueryScript = jqueryScript,
+                               bokeh=str(bokeh_version))
     return app

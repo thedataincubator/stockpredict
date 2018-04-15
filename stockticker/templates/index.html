@@ -19,29 +19,29 @@
     <link
         href="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.{{ bokeh }}.min.css"
         rel="stylesheet" type="text/css">
-
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    {{ jqueryScript | safe }}
 </head>
   <body>
-    <H1>Stock Predictions for TDI Group Project</H1>
 
-     <ul class="menu">
-            <li><a href="/about">About</a></li>
-    </ul>
-
-    <p>Input the ticker symbol for the stock you would like to see predictions for </p>
-
-    <form id='input' method='post' action='/plotpage' >
-        <p>Ticker symbol: <input type='text' name='ticker' /></p>
-
-        <input type='submit' value='Submit' /> 
-
-    </form>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 text-left">
+          {{ resultDivs | safe }}
+	</div>
+      </div>
+    </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  
+   
+    <script src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.{{ bokeh }}.min.js"></script>
+    <script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.{{ bokeh }}.min.js"></script>
+    <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.{{ bokeh }}.min.js"></script>
+
 </body>
 </html>
