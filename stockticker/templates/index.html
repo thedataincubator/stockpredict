@@ -20,14 +20,16 @@
         href="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.{{ bokeh }}.min.css"
         rel="stylesheet" type="text/css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    {{ jqueryScript | safe }}
+    <script src="{{ stockscript }}"></script>
+    {{ queryscript | safe }}
 </head>
   <body>
 
     <div class="container">
       <div class="row">
         <div class="col-lg-12 text-left">
-          {{ resultDivs | safe }}
+	  <div id=results>
+	  </div>
 	</div>
       </div>
     </div>
