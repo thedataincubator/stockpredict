@@ -20,9 +20,9 @@
         href="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.{{ bokeh }}.min.css"
         rel="stylesheet" type="text/css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="{{ stock_script_url }}"></script>
+    <script src="{{ url_for('static', filename='stockTicker.js') }}"></script>
     <script>
-      stockTicker.tickerQueryUrl = "{{ticker_query_url}}";
+      stockTicker.tickerQueryUrl = "{{ url_for('handle_ticker') }}";
       $(function() {
         stockTicker.processTickers({{initial_tickers | safe}})
       });

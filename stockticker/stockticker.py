@@ -144,13 +144,10 @@ def create_app(prophet_url, secret_key, quandl_key,
         else:
             initial_tickers = []
 
-        ticker_query_url = url_for('handle_ticker', _external=True)
-        stock_script_url = url_for('static', filename='stockTicker.js',
-                                   _external=True)
+        ticker_query_url = url_for('handle_ticker')
+        stock_script_url = url_for('static', filename='stockTicker.js')
 
         return render_template('index.html',
-                               stock_script_url=stock_script_url,
-                               ticker_query_url=ticker_query_url,
                                initial_tickers=json.dumps(initial_tickers),
                                bokeh=str(bokeh_version))
     return app
