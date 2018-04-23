@@ -31,5 +31,3 @@ def parse_portfolio_args(request):
 
 
     return (tickers, weights)
-
-
