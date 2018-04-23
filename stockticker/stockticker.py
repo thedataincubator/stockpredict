@@ -36,7 +36,7 @@ def query_quandl(ticker, quandl_key, value='open', days=500,
               'qopts.columns': 'date,{}'.format(value), 'api_key': quandl_key}
     try:
         req = requests.get(QUANDL_URL, params=params,
-                         timeout=10)# pylint: disable=C0103
+                           timeout=10)# pylint: disable=C0103
     except Timeout:
         raise QuandlException('Request timed out')
     if not req.ok:
