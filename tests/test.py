@@ -1,8 +1,12 @@
+"""Unit tests for Stockticker App"""
+
 import unittest
-import requests
 import responses
 import simplejson as json
+import pandas as pd
+import numpy as np
 from stockticker import create_app, query_quandl, QuandlException
+from stockticker.portfolio import sum_portfolio_data
 
 QUANDL_URL = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json'
 QUANDL_DATA = json.loads("""{
@@ -431,3 +435,98 @@ class TestApp(unittest.TestCase):
     def test_quandl_fail(self):
         self._test_quandl_error(404)
         self._test_quandl_error(503)
+
+class TestPortfolio(unittest.TestCase): #pylint: disable=R0904
+    """Test logic in the portfolio module"""
+
+    def setUp(self):
+        """Perform some setup actions"""
+        self._tickers = ["GOOGL", "AAPL"]
+        self._prices = {
+            'GOOGL': [314.15, 271.82, 57.72],
+            'AAPL': [161.80, 141.21, 173.20]}
+        self._weights = {'GOOGL': .25, 'AAPL': .75}
+        self._dates = ["2018-03-01", "2018-03-02", "2018-03-03"]
+        self._numDates = len(self._dates)
+        self._unweighted_totals = [sum(self._prices[key][i]
+                                       for key in self._tickers)
+                                   for i in range(self._numDates)]
+        self._weighted_totals = [sum(self._weights[key]*self._prices[key][i]
+                                     for key in self._tickers)
+                                 for i in range(self._numDates)]
+
+    def _build_portfolio_data(self):
+        portfolio_data = pd.DataFrame()
+        portfolio_data['ds'] = self._dates
+        for ticker in self._tickers:
+            portfolio_data[ticker] = self._prices[ticker]
+
+        return portfolio_data
+
+    def _assert_in_tolerance(self, actual, expected, tol=1e-3):
+        """Helper function to check the expected value of a floating
+        point value. Checks that actual is within a certain
+        tolerance of the expected value"""
+        self.assertTrue(abs(actual-expected)/expected < tol)
+
+    def _assert_list_in_tolerance(self, actual_list, expected_list, tol=1e-3):
+        """Helper function to check the expected values of a list of
+        floating point values"""
+
+        for ind, actual in enumerate(actual_list):
+            self._assert_in_tolerance(actual, expected_list[ind], tol)
+
+    def test_addition(self):
+        """Test basic case of getting the portfolio aggregate values"""
+
+        portfolio_data = self._build_portfolio_data()
+
+        sum_portfolio_data(portfolio_data, self._tickers, None)
+
+        self._assert_list_in_tolerance(portfolio_data['Portfolio'],
+                                       self._unweighted_totals)
+
+    def test_addition_with_weights(self):
+        """Test weighted case of getting the portfolio aggregate values"""
+
+        portfolio_data = self._build_portfolio_data()
+
+        sum_portfolio_data(portfolio_data, self._tickers, self._weights)
+
+        self._assert_list_in_tolerance(portfolio_data['Portfolio'],
+                                       self._weighted_totals)
+
+    def test_addition_with_missing_data(self):
+        """Test adding portfolio data when there is some missing data"""
+
+        for ticker in self._tickers:
+            for i in range(3):
+                portfolio_data = self._build_portfolio_data()
+                portfolio_data.at[i, ticker] = np.nan
+
+                expected_result = self._unweighted_totals[:i] +\
+                                  self._unweighted_totals[i+1:]
+                expected_dates = self._dates[:i] + self._dates[i+1:]
+
+                sum_portfolio_data(portfolio_data, self._tickers, None)
+                self._assert_list_in_tolerance(portfolio_data['Portfolio'],
+                                               expected_result)
+                self.assertEqual(list(portfolio_data['ds']), expected_dates)
+
+    def test_addition_with_nans_weights(self):
+        """Test weighted addition portfolio data when there is some
+        mmissing data"""
+
+        for ticker in self._tickers:
+            for i in range(3):
+                portfolio_data = self._build_portfolio_data()
+                portfolio_data.at[i, ticker] = np.nan
+
+                expected_result = self._weighted_totals[:i] +\
+                                  self._weighted_totals[i+1:]
+                expected_dates = self._dates[:i] + self._dates[i+1:]
+
+                sum_portfolio_data(portfolio_data, self._tickers, self._weights)
+                self._assert_list_in_tolerance(portfolio_data['Portfolio'],
+                                               expected_result)
+                self.assertEqual(list(portfolio_data['ds']), expected_dates)

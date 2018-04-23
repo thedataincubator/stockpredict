@@ -10,6 +10,7 @@ def sum_portfolio_data(portfolio_data, tickers, weights):
         return sum(row[ticker]*weights[ticker] for ticker in tickers)
 
     portfolio_data['Portfolio'] = portfolio_data.apply(_add_columns, axis=1)
+    portfolio_data.dropna(inplace=True)
 
 def parse_portfolio_args(request):
     """Parse the args to the portfolio route"""
