@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 import requests
 from requests import Timeout
 import simplejson as json
-from flask import Flask, render_template, url_for, jsonify
-from flask import  request # pylint: disable=W0611
+from flask import Flask, render_template, jsonify
+from flask import request, url_for # pylint: disable=W0611
 import pandas as pd
 from .stockplot import plotting
 from .static_ticker import VALIDT
