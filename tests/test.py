@@ -391,12 +391,14 @@ class TestApp(unittest.TestCase):
 
     @responses.activate
     def test_post_error(self):
+        """If our POST request to Prophet errors out, our web app will still
+        return a page"""
         responses.add(responses.GET, QUANDL_URL, json=QUANDL_DATA, status=200)
         responses.add(responses.POST, self.url,
                       json={'error': 'not found'}, 
                       status=404)
         res = self.app.get('/')
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.status_code, 200)
 
     @responses.activate
     def test_post_success(self):
