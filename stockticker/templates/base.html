@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+	{% block head %}
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="Price predictions for user input stock tickers.">
+
+		<title> {% block title %} Stock Predictions {% endblock %} </title>
+
+		   <!-- Bootstrap core CSS -->
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="{{ url_for('static', filename='stockTicker.js') }}"></script>
+
+	{% endblock %}
+
+</head>
+
+<body style="margin:1; padding:2">
+
+	<h1 style="font-family:sans-serif; text-align:center"> {% block heading %} Stock Price Prediction App {% endblock %} </h1>
+
+	<div class="container">
+		{% block content %} 
+		{% endblock %}
+	</div>
+
+    <!-- Bootstrap core JavaScript
+    	================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    	{% block javascript %}
+	    	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	    	<script src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.{{ bokeh }}.min.js"></script>
+	    	<script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.{{ bokeh }}.min.js"></script>
+	    	<script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.{{ bokeh }}.min.js"></script>
+    	{% endblock %}
+
+    </body>
+    </html>

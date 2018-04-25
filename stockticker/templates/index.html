@@ -1,58 +1,35 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Skeleton application demoing Heroku and Flask integration.">
-    <!-- <link rel="icon" href="favicon.ico"> -->
+{% extends "base.html" %}
 
-    <title>Stock Ticker</title>
+{% block head %}
+{{ super() }}
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link
-        href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.{{ bokeh }}.min.css"
-        rel="stylesheet" type="text/css">
-    <link
-        href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.{{ bokeh }}.min.css"
-        rel="stylesheet" type="text/css">
-    <link
-        href="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.{{ bokeh }}.min.css"
-        rel="stylesheet" type="text/css">
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="{{ url_for('static', filename='stockTicker.js') }}"></script>
-    <script>
-      stockTicker.tickerQueryUrl = "{{ url_for('handle_ticker') }}";
-      $(function() {
-        stockTicker.processTickers({{initial_tickers | safe}})
-      });
-    </script>
-  </head>
-  <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 text-left">
-          <p>Tickers: <input type="text" id="tickers" /></p>
-          <p><input type="button" id="search" value="View" /></p>
-        </div>
-      </div>
+  <script>
+    stockTicker.tickerQueryUrl = "{{ url_for('handle_ticker') }}";
+    $(function() {
+      stockTicker.processTickers({{initial_tickers | safe}})
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-lg-12 text-left">
+
+    <p>Tickers: <input type="text" id="tickers" /></p>
+    <p><input type="button" id="search" value="View" /></p>
+
+    <div id=results>
     </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 text-left">
-	  <div id=results>
-	  </div>
-	</div>
-      </div>
-    </div>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-   
-    <script src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.{{ bokeh }}.min.js"></script>
-    <script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.{{ bokeh }}.min.js"></script>
-    <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.{{ bokeh }}.min.js"></script>
 
-</body>
-</html>
+  </div>
+</div>
+{%- endblock %} 
+
+
+
+
+
+    
+
+
