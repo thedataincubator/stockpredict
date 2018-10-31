@@ -1,7 +1,6 @@
 nomkl==1.0
 bokeh==0.12.7
 dill==0.2.6
-flask==0.12.2
 jinja2==2.9.6
 pip==9.0.1
 simplejson==3.11.1
